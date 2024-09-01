@@ -43,13 +43,37 @@ function PneumoniaPredictor() {
             });
     };
 
+    const getTreatmentPlan = () => {
+        return (
+            <div className="treatment-plan">
+                <h4>Treatment Plan:</h4>
+                <ul>
+                    <li>Consult with a healthcare provider for a detailed evaluation and treatment plan.</li>
+                    <li>Antibiotics or antiviral medications may be prescribed based on the cause of pneumonia.</li>
+                    <li>Rest and hydration are crucial for recovery.</li>
+                    <li>Follow up with a healthcare provider to monitor recovery progress.</li>
+                    <li>Consider vaccination to prevent future cases, if applicable.</li>
+                </ul>
+            </div>
+        );
+    };
+
+    const getNoDiseaseMessage = () => {
+        return (
+            <div className="no-disease">
+                <h4>No pneumonia detected.</h4>
+                <p>Continue to maintain good respiratory health and follow regular check-ups.</p>
+            </div>
+        );
+    };
+
     return (
         <div className="container">
             <div className="row" style={{ marginBottom: '300px' }}>
                 <div className="col-md-3"></div>
                 <div className="col-md-6">
                     <center><h1>Pneumonia Predictor</h1></center>
-                    <div className="card card-body" style={{ backgroundColor: '#daa8f4' }}>
+                    <div className="card card-body">
                         <center><h3>Please upload the X-Ray of the person</h3></center>
                         {error && <div className="alert alert-danger">{error}</div>}
                         <form onSubmit={handleSubmit}>
@@ -75,7 +99,6 @@ function PneumoniaPredictor() {
                                 <br />
                                 <br />
                                 <input
-                                    style={{ backgroundColor: '#4e0374' }}
                                     className="btn btn-info"
                                     type="submit"
                                     value="Predict"
@@ -85,6 +108,7 @@ function PneumoniaPredictor() {
                         {result !== null && (
                             <div className="result">
                                 <h3>Prediction: {result}</h3>
+                                {result === "positive" ? getTreatmentPlan() : getNoDiseaseMessage()}
                             </div>
                         )}
                     </div>

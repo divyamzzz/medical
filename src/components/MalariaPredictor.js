@@ -43,13 +43,32 @@ function MalariaPredictor() {
             });
     };
 
+    const renderResult = () => {
+        if (result === 1) {
+            return (
+                <div className="treatment-plan">
+                    <h3 style={{ color: 'black' }}>Treatment Plan for Malaria</h3>
+                    <ul>
+                        <li>Consult a healthcare provider immediately for proper diagnosis and treatment.</li>
+                        <li>Antimalarial medications such as chloroquine, artemisinin-based combination therapies (ACTs), or other prescribed drugs should be taken as directed.</li>
+                        <li>Stay hydrated and rest to help the body recover.</li>
+                        <li>Monitor symptoms and report any worsening conditions to your healthcare provider.</li>
+                        <li>Prevent mosquito bites by using mosquito nets, repellents, and staying in screened or air-conditioned areas.</li>
+                    </ul>
+                </div>
+            );
+        } else if (result === 0) {
+            return <div className="no-disease"><h3>You do not have malaria.</h3></div>;
+        }
+    };
+
     return (
         <div className="container">
             <div className="row" style={{ marginBottom: '300px' }}>
                 <div className="col-md-3"></div>
                 <div className="col-md-6">
                     <center><h1>Malaria Predictor</h1></center>
-                    <div className="card card-body" style={{ backgroundColor: '#daa8f4' }}>
+                    <div className="card card-body">
                         <center><h3>Please upload the cell image</h3></center>
                         {error && <div className="alert alert-danger">{error}</div>}
                         <form onSubmit={handleSubmit}>
@@ -75,18 +94,13 @@ function MalariaPredictor() {
                                 <br />
                                 <br />
                                 <input
-                                    style={{ backgroundColor: '#4e0374' }}
                                     className="btn btn-info"
                                     type="submit"
                                     value="Predict"
                                 />
                             </center>
                         </form>
-                        {result !== null && (
-                            <div className="result">
-                                <h3>Prediction: {result}</h3>
-                            </div>
-                        )}
+                        {result !== null && renderResult()}
                     </div>
                 </div>
                 <div className="col-md-3"></div>

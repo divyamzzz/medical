@@ -38,6 +38,30 @@ function LiverDiseasePredictor() {
             });
     };
 
+    const getTreatmentPlan = () => {
+        return (
+            <div className="treatment-plan">
+                <h4>Treatment Plan:</h4>
+                <ul>
+                    <li>Consult with a healthcare provider for a comprehensive evaluation and treatment plan.</li>
+                    <li>Medication may be prescribed depending on the specific liver condition.</li>
+                    <li>Adopt a healthy diet and avoid alcohol to support liver health.</li>
+                    <li>Regular monitoring of liver function through follow-up tests is essential.</li>
+                    <li>In some cases, additional imaging or biopsy may be needed for further assessment.</li>
+                </ul>
+            </div>
+        );
+    };
+
+    const getNoDiseaseMessage = () => {
+        return (
+            <div className="no-disease">
+                <h4>No liver disease detected.</h4>
+                <p>Maintain a healthy lifestyle and schedule regular health check-ups to ensure ongoing liver health.</p>
+            </div>
+        );
+    };
+
     return (
         <div className="container">
             <div className="row" style={{ marginBottom: '180px' }}>
@@ -186,6 +210,7 @@ function LiverDiseasePredictor() {
                         {result !== null && (
                             <div className="result">
                                 <h3>Prediction: {result}</h3>
+                                {result === "positive" ? getTreatmentPlan() : getNoDiseaseMessage()}
                             </div>
                         )}
                         {error && <p style={{color: 'red'}}>{error}</p>}

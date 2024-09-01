@@ -52,6 +52,21 @@ function KidneyDiseasePredictor() {
             });
     };
 
+    const getTreatmentPlan = () => {
+        return (
+            <div className="treatment-plan">
+                <h3>Treatment Plan</h3>
+                <p>1. Consult a nephrologist for further evaluation and management.</p>
+                <p>2. Follow a renal diet, which is low in protein, salt, and potassium.</p>
+                <p>3. Monitor blood pressure regularly and manage it with prescribed medications.</p>
+                <p>4. Maintain optimal blood glucose levels if diabetic.</p>
+                <p>5. Stay hydrated, but manage fluid intake as advised by your doctor.</p>
+                <p>6. Regularly monitor kidney function tests as per your doctor's advice.</p>
+                <p>7. Consider medications or treatments as prescribed by your healthcare provider.</p>
+            </div>
+        );
+    };
+
     return (
         <div className="container">
             <div className="row">
@@ -274,7 +289,7 @@ function KidneyDiseasePredictor() {
                                             className="form-control"
                                             type="text"
                                             name="white_blood_cell_count"
-                                            placeholder="White Blood Cell Count (in cells/cumm)"
+                                            placeholder="White Blood Cell Count (in /cmm)"
                                             value={formData.white_blood_cell_count}
                                             onChange={handleChange}
                                         />
@@ -286,7 +301,7 @@ function KidneyDiseasePredictor() {
                                             className="form-control"
                                             type="text"
                                             name="red_blood_cell_count"
-                                            placeholder="Red Blood Cell Count (in millions/cmm)"
+                                            placeholder="Red Blood Cell Count (in million/cmm)"
                                             value={formData.red_blood_cell_count}
                                             onChange={handleChange}
                                         />
@@ -340,7 +355,7 @@ function KidneyDiseasePredictor() {
                                             className="form-control"
                                             type="text"
                                             name="appetite"
-                                            placeholder="Appetite (0: Good; 1: Poor)"
+                                            placeholder="Appetite (good or poor)"
                                             value={formData.appetite}
                                             onChange={handleChange}
                                         />
@@ -352,7 +367,7 @@ function KidneyDiseasePredictor() {
                                             className="form-control"
                                             type="text"
                                             name="peda_edema"
-                                            placeholder="Pedal Edema (0: No; 1: Yes)"
+                                            placeholder="Peda Edema (0: No; 1: Yes)"
                                             value={formData.peda_edema}
                                             onChange={handleChange}
                                         />
@@ -376,7 +391,14 @@ function KidneyDiseasePredictor() {
                         </form>
                         {result !== null && (
                             <div className="result">
-                                <h3>Prediction: {result}</h3>
+                                {result === '1' ? (
+                                    <>
+                                        <h3>Prediction: Disease Detected</h3>
+                                        {getTreatmentPlan()}
+                                    </>
+                                ) : (
+                                    <h3>No Disease Detected</h3>
+                                )}
                             </div>
                         )}
                         {error && <p style={{color: 'red'}}>{error}</p>}

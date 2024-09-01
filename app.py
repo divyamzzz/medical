@@ -11,186 +11,176 @@ import numpy as np
 app = Flask(__name__)
 CORS(app)
 
-def predict(values, dic):
-    # diabetes
-    if len(values) == 8:
+@app.route('/api/diabetese', methods=['POST'])
+def predict_route():
+    try:
+        model = pickle.load(open('diabetes.pkl', 'rb'))
+
+        data = request.get_json(force=True)
+
+        to_predict_dict = {key: float(value) for key, value in data.items()}
         dic2 = {
             'NewBMI_Obesity 1': 0, 'NewBMI_Obesity 2': 0, 'NewBMI_Obesity 3': 0,
             'NewBMI_Overweight': 0, 'NewBMI_Underweight': 0, 'NewInsulinScore_Normal': 0,
             'NewGlucose_Low': 0, 'NewGlucose_Normal': 0, 'NewGlucose_Overweight': 0,
             'NewGlucose_Secret': 0
         }
-        dic = {key: float(value) for key, value in dic.items()}
-        if dic['BMI'] <= 18.5:
+        if to_predict_dict['BMI'] <= 18.5:
             dic2['NewBMI_Underweight'] = 1
-        elif 18.5 < dic['BMI'] <= 24.9:
-            pass
-        elif 24.9 < dic['BMI'] <= 29.9:
+        elif 18.5 < to_predict_dict['BMI'] <= 24.9:
+            pass  # Normal BMI
+        elif 24.9 < to_predict_dict['BMI'] <= 29.9:
             dic2['NewBMI_Overweight'] = 1
-        elif 29.9 < dic['BMI'] <= 34.9:
+        elif 29.9 < to_predict_dict['BMI'] <= 34.9:
             dic2['NewBMI_Obesity 1'] = 1
-        elif 34.9 < dic['BMI'] <= 39.9:
+        elif 34.9 < to_predict_dict['BMI'] <= 39.9:
             dic2['NewBMI_Obesity 2'] = 1
-        elif dic['BMI'] > 39.9:
+        elif to_predict_dict['BMI'] > 39.9:
             dic2['NewBMI_Obesity 3'] = 1
 
-        if 16 <= dic['Insulin'] <= 166:
+        if 16 <= to_predict_dict['Insulin'] <= 166:
             dic2['NewInsulinScore_Normal'] = 1
 
-        if dic['Glucose'] <= 70:
+        if to_predict_dict['Glucose'] <= 70:
             dic2['NewGlucose_Low'] = 1
-        elif 70 < dic['Glucose'] <= 99:
+        elif 70 < to_predict_dict['Glucose'] <= 99:
             dic2['NewGlucose_Normal'] = 1
-        elif 99 < dic['Glucose'] <= 126:
+        elif 99 < to_predict_dict['Glucose'] <= 126:
             dic2['NewGlucose_Overweight'] = 1
-        elif dic['Glucose'] > 126:
+        elif to_predict_dict['Glucose'] > 126:
             dic2['NewGlucose_Secret'] = 1
-
-        dic.update(dic2)
-        values2 = list(map(float, list(dic.values())))
-
-        model = pickle.load(open('diabetes.pkl', 'rb'))
+        to_predict_dict.update(dic2)
+        values2 = list(map(float, to_predict_dict.values()))
         values = np.asarray(values2)
-        return model.predict(values.reshape(1, -1))[0]
-    
-    elif len(values) == 22:
-        model = pickle.load(open('models/breast_cancer.pkl','rb'))
-        values = np.asarray(values)
-        return model.predict(values.reshape(1, -1))[0]
-
-    # heart disease
-    elif len(values) == 13:
-        model = pickle.load(open('models/heart.pkl','rb'))
-        values = np.asarray(values)
-        return model.predict(values.reshape(1, -1))[0]
-
-    # kidney disease
-    elif len(values) == 24:
-        model = pickle.load(open('models/kidney.pkl','rb'))
-        values = np.asarray(values)
-        return model.predict(values.reshape(1, -1))[0]
-
-    # liver disease
-    elif len(values) == 10:
-        model = pickle.load(open('models/liver.pkl','rb'))
-        values = np.asarray(values)
-        return model.predict(values.reshape(1, -1))[0]
-
-@app.route('/api/diabetese', methods=['POST'])
-def predict_route():
-    try:
-        data = request.get_json(force=True)
-
-        # Debug: Print incoming data
-        print("Received data:", data)
-
-        # Extract input values from the request
-        input_values = [
-            data.get('Pregnancies', 0),
-            data.get('Glucose', 0),
-            data.get('BloodPressure', 0),
-            data.get('SkinThickness', 0),
-            data.get('Insulin', 0),
-            data.get('BMI', 0),
-            data.get('DiabetesPedigreeFunction', 0),
-            data.get('Age', 0)
-        ]
-
-        # Debug: Print extracted values
-        print("Input values:", input_values)
-
-        # Ensure all necessary fields are in the dictionary
-        dic = {
-            'Pregnancies': input_values[0],
-            'Glucose': input_values[1],
-            'BloodPressure': input_values[2],
-            'SkinThickness': input_values[3],
-            'Insulin': input_values[4],
-            'BMI': input_values[5],
-            'DiabetesPedigreeFunction': input_values[6],
-            'Age': input_values[7]
-        }
-
-        # Call the predict function
-        prediction = predict(input_values, dic)
+        print("Making prediction with input values:", values)
+        prediction = model.predict(values.reshape(1, -1))[0]
+        print("Prediction made:", int(prediction))
 
         return jsonify({'prediction': int(prediction)})
 
     except Exception as e:
-        # Print the stack trace for debugging
+        # Print stack trace and return error message
         traceback.print_exc()
         return jsonify({'error': str(e)}), 500
     
 @app.route('/api/breastcancer', methods=['POST'])
 def predict_breast_cancer():
-    data = request.json
-
-    # Validate data (all necessary fields are present)
-    required_fields = [
-        'texture_mean', 'smoothness_mean', 'compactness_mean', 'concave_points_mean', 
-        'symmetry_mean', 'fractal_dimension_mean', 'texture_se', 'area_se', 'smoothness_se', 
-        'compactness_se', 'concavity_se', 'concave_points_se', 'symmetry_se', 'fractal_dimension_se', 
-        'texture_worst', 'area_worst', 'smoothness_worst', 'compactness_worst', 
-        'concavity_worst', 'concave_points_worst', 'symmetry_worst', 'fractal_dimension_worst'
-    ]
-    if not all(field in data for field in required_fields):
-        return jsonify({'error': 'Invalid data'}), 400
-
+    model = None
     try:
+        # Load the model only when the route is accessed
+        model = pickle.load(open('models/breast_cancer.pkl', 'rb'))
+        print("Model loaded successfully.")
+
+        # Extract JSON data from the request
+        data = request.get_json(force=True)
+
+        # Validate that all required fields are present
+        required_fields = [
+            'texture_mean', 'smoothness_mean', 'compactness_mean', 'concave_points_mean', 
+            'symmetry_mean', 'fractal_dimension_mean', 'texture_se', 'area_se', 'smoothness_se', 
+            'compactness_se', 'concavity_se', 'concave_points_se', 'symmetry_se', 'fractal_dimension_se', 
+            'texture_worst', 'area_worst', 'smoothness_worst', 'compactness_worst', 
+            'concavity_worst', 'concave_points_worst', 'symmetry_worst', 'fractal_dimension_worst'
+        ]
+        if not all(field in data for field in required_fields):
+            return jsonify({'error': 'Invalid data'}), 400
+
         # Convert incoming JSON data to the required format (floats)
         formatted_data = {key: float(value) for key, value in data.items()}
         to_predict_list = list(formatted_data.values())
-        pred = predict(to_predict_list, formatted_data)
-        
-        return jsonify({'prediction': int(pred)})
+
+        # Prepare data for prediction
+        values = np.asarray(to_predict_list)
+        print("Making prediction with input values:", values)
+
+        # Make prediction
+        prediction = model.predict(values.reshape(1, -1))[0]
+        print("Prediction made:", int(prediction))
+
+        return jsonify({'prediction': int(prediction)})
 
     except Exception as e:
+        # Print stack trace and return error message
+        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
     
 @app.route('/api/heartdisease', methods=['POST'])
 def predict_heart_disease():
-    data = request.json
-
-    required_fields = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 
-                       'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
-
-    if not all(field in data for field in required_fields):
-        return jsonify({'error': 'Invalid data'}), 400
-
+    model = None
     try:
+        # Load the model only when the route is accessed
+        model = pickle.load(open('models/heart.pkl', 'rb'))
+        print("Model loaded successfully.")
+
+        # Extract JSON data from the request
+        data = request.get_json(force=True)
+
+        # Validate that all required fields are present
+        required_fields = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 
+                           'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
+        if not all(field in data for field in required_fields):
+            return jsonify({'error': 'Invalid data'}), 400
+
+        # Convert incoming JSON data to the required format (floats)
         formatted_data = {key: float(value) for key, value in data.items()}
         to_predict_list = list(formatted_data.values())
-        pred = predict(to_predict_list, formatted_data)
-        
-        return jsonify({'prediction': int(pred)})
+
+        # Prepare data for prediction
+        values = np.asarray(to_predict_list)
+        print("Making prediction with input values:", values)
+
+        # Make prediction
+        prediction = model.predict(values.reshape(1, -1))[0]
+        print("Prediction made:", int(prediction))
+
+        return jsonify({'prediction': int(prediction)})
 
     except Exception as e:
+        # Print stack trace and return error message
+        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
+    
 @app.route('/api/kidneydisease', methods=['POST'])
 def predict_kidney_disease():
-    data = request.json
-
-    required_fields = [
-        'age', 'blood_pressure', 'specific_gravity', 'albumin', 'sugar', 
-        'red_blood_cells', 'pus_cell', 'pus_cell_clumps', 'bacteria', 
-        'blood_glucose_random', 'blood_urea', 'serum_creatinine', 'sodium', 
-        'potassium', 'haemoglobin', 'packed_cell_volume', 
-        'white_blood_cell_count', 'red_blood_cell_count', 'hypertension', 
-        'diabetes_mellitus', 'coronary_artery_disease', 'appetite', 
-        'peda_edema', 'aanemia'
-    ]
-
-    if not all(field in data for field in required_fields):
-        return jsonify({'error': 'Invalid data'}), 400
-
+    model = None
     try:
+        # Load the model only when the route is accessed
+        model = pickle.load(open('models/kidney.pkl', 'rb'))
+        print("Model loaded successfully.")
+
+        # Extract JSON data from the request
+        data = request.get_json(force=True)
+
+        # Validate that all required fields are present
+        required_fields = [
+            'age', 'blood_pressure', 'specific_gravity', 'albumin', 'sugar', 
+            'red_blood_cells', 'pus_cell', 'pus_cell_clumps', 'bacteria', 
+            'blood_glucose_random', 'blood_urea', 'serum_creatinine', 'sodium', 
+            'potassium', 'haemoglobin', 'packed_cell_volume', 
+            'white_blood_cell_count', 'red_blood_cell_count', 'hypertension', 
+            'diabetes_mellitus', 'coronary_artery_disease', 'appetite', 
+            'peda_edema', 'aanemia'
+        ]
+        if not all(field in data for field in required_fields):
+            return jsonify({'error': 'Invalid data'}), 400
+
+        # Convert incoming JSON data to the required format (floats)
         formatted_data = {key: float(value) for key, value in data.items()}
         to_predict_list = list(formatted_data.values())
-        pred = predict(to_predict_list, formatted_data)
-        
-        return jsonify({'prediction': int(pred)})
+
+        # Prepare data for prediction
+        values = np.asarray(to_predict_list)
+        print("Making prediction with input values:", values)
+
+        # Make prediction
+        prediction = model.predict(values.reshape(1, -1))[0]
+        print("Prediction made:", int(prediction))
+
+        return jsonify({'prediction': int(prediction)})
 
     except Exception as e:
+        # Print stack trace and return error message
+        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/liverdisease', methods=['POST'])
@@ -204,15 +194,25 @@ def predict_liver_disease():
         'Albumin', 'Albumin_and_Globulin_Ratio'
     ]
 
+    # Check if all required fields are present
     if not all(field in data for field in required_fields):
         return jsonify({'error': 'Invalid data'}), 400
 
     try:
-        formatted_data = {key: float(value) for key, value in data.items()}
-        to_predict_list = list(formatted_data.values())
-        pred = predict(to_predict_list, formatted_data)
-        
-        return jsonify({'prediction': int(pred)})
+        # Convert the input data to a float array
+        values = [float(data[field]) for field in required_fields]
+
+        # Convert the values to a numpy array
+        values = np.asarray(values)
+
+        # Load the model inside the route
+        model = pickle.load(open('models/liver.pkl', 'rb'))
+
+        # Use the loaded model to make a prediction
+        prediction = model.predict(values.reshape(1, -1))[0]
+
+        # Return the prediction as a JSON response
+        return jsonify({'prediction': int(prediction)})
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500

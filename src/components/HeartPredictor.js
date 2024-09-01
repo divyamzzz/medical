@@ -41,6 +41,29 @@ function HeartDiseasePredictor() {
             });
     };
 
+    const getTreatmentPlan = () => {
+        return (
+            <div className="treatment-plan">
+                <h4>Treatment Plan:</h4>
+                <ul>
+                    <li>Consult with a cardiologist for a detailed evaluation.</li>
+                    <li>Consider lifestyle changes such as a balanced diet, regular exercise, and quitting smoking.</li>
+                    <li>Medications may be prescribed to manage blood pressure, cholesterol levels, and other risk factors.</li>
+                    <li>Follow up with regular check-ups to monitor heart health.</li>
+                </ul>
+            </div>
+        );
+    };
+
+    const getNoDiseaseMessage = () => {
+        return (
+            <div className="no-disease">
+                <h4>No disease detected.</h4>
+                <p>Keep up with a healthy lifestyle and regular check-ups to maintain good health.</p>
+            </div>
+        );
+    };
+
     return (
         <div className="container">
             <div className="row" style={{ marginBottom: '72px' }}>
@@ -232,9 +255,10 @@ function HeartDiseasePredictor() {
                         {result !== null && (
                             <div className="result">
                                 <h3>Prediction: {result}</h3>
+                                {result === 1 ? getTreatmentPlan() : getNoDiseaseMessage()}
                             </div>
                         )}
-                        {error && <p style={{color: 'red'}}>{error}</p>}
+                        {error && <p style={{ color: 'red' }}>{error}</p>}
                     </div>
                 </div>
                 <div className="col-md-2"></div>

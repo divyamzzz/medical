@@ -36,6 +36,24 @@ function DiabetesPredictor() {
             });
     };
 
+    const renderResult = () => {
+        if (result === 1) {
+            return (
+                <div className="treatment-plan">
+                    <h2 style={{ color: 'black' }}>Treatment Plan for Diabetes</h2>
+                    <ul>
+                        <li>Maintain a healthy diet with low sugar and low carbs.</li>
+                        <li>Engage in regular physical activity.</li>
+                        <li>Monitor your blood sugar levels regularly.</li>
+                        <li>Take prescribed medications as directed by your doctor.</li>
+                        <li>Regularly consult with your healthcare provider.</li>
+                    </ul>
+                </div>
+            );
+        } else if (result === 0) {
+            return <div className="no-disease">You do not have diabetes.</div>;
+        }
+    };
     return (
         <div className="container">
             <h1>Diabetes Predictor</h1>
@@ -54,7 +72,7 @@ function DiabetesPredictor() {
                 ))}
                 <button type="submit" className="btn btn-primary">Predict</button>
             </form>
-            {result !== null && <div className="result">Prediction: {result}</div>}
+            {result !== null && renderResult()}
             {error && <p style={{color: 'red'}}>{error}</p>}
         </div>
     );
