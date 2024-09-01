@@ -14,7 +14,7 @@ CORS(app)
 @app.route('/api/diabetese', methods=['POST'])
 def predict_route():
     try:
-        model = pickle.load(open('diabetes.pkl', 'rb'))
+        model = pickle.load(open('models/diabetes.pkl', 'rb'))
 
         data = request.get_json(force=True)
 
