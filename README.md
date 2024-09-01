@@ -20,8 +20,3 @@ We’ve built a web application designed to empower patients by providing them w
 - Flask
 - React
 - Machine Learning
-
-## Links
-- [Link 1]()
-- [Link 2]()
-- [Link 3]()
