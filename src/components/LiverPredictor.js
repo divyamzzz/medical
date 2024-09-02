@@ -210,7 +210,7 @@ function LiverDiseasePredictor() {
                         {result !== null && (
                             <div className="result">
                                 <h3>Prediction: {result}</h3>
-                                {result === "positive" ? getTreatmentPlan() : getNoDiseaseMessage()}
+                                {result === 1 ? getTreatmentPlan() : getNoDiseaseMessage()}
                             </div>
                         )}
                         {error && <p style={{color: 'red'}}>{error}</p>}

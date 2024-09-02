@@ -58,6 +58,7 @@ function BreastCancerPredictor() {
                     <center><h1>Breast Cancer Predictor</h1></center>
                     <div className="card card-body">
                         <form onSubmit={handleSubmit}>
+                            {/* Form fields */}
                             <div className="row">
                                 {Object.keys(formData).slice(0, 6).map(key => (
                                     <div className="col-md-4" key={key}>
@@ -145,10 +146,17 @@ function BreastCancerPredictor() {
                         </form>
                         {result !== null && (
                             <div className="result">
-                                <h3>Prediction: {result}</h3>
+                                {result === 1 ? (
+                                    <div>
+                                        <h3>Prediction: Positive for Breast Cancer</h3>
+                                        <p>Treatment Plan: You may need to consult with an oncologist for further evaluation and treatment options, which could include surgery, radiation, chemotherapy, or other targeted therapies.</p>
+                                    </div>
+                                ) : (
+                                    <h3>Prediction: You do not have the disease</h3>
+                                )}
                             </div>
                         )}
-                        {error && <p style={{color: 'red'}}>{error}</p>}
+                        {error && <p style={{ color: 'red' }}>{error}</p>}
                     </div>
                 </div>
                 <div className="col-md-2"></div>
